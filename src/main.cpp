@@ -1,17 +1,24 @@
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include "memlib/Process.h"
 #include "command/Command.h"
 #include "command/ListProcessesCommand.h"
 #include "command/ViewProcessInfoCommand.h"
 #include "command/DumpProcessMemoryCommand.h"
+#include "command/ListUsersWithProcessesCommand.h"
 
 int main() {
 
+    // TODO: Check for root privileges and print info if not granted
+
+
     std::vector<std::unique_ptr<Command>> commands;
-    commands.push_back(std::unique_ptr<ListProcessesCommand>(new ListProcessesCommand));
-    commands.push_back(std::unique_ptr<ViewProcessInfoCommand>(new ViewProcessInfoCommand));
-    commands.push_back(std::unique_ptr<DumpProcessMemoryCommand>(new DumpProcessMemoryCommand));
+    commands.push_back(std::make_unique<ListProcessesCommand>());
+    commands.push_back(std::make_unique<ListUsersWithProcessesCommand>());
+    commands.push_back(std::make_unique<ViewProcessInfoCommand>());
+    commands.push_back(std::make_unique<DumpProcessMemoryCommand>());
+
 
 
 
@@ -44,7 +51,7 @@ int main() {
 
         char firstChar = input.front();
 
-        int number = std::atoi(&firstChar);
+        int number = std::atoi(&firstChar); // TODO: No error check atm
         if(number == 0){
             proceed = false;
         }
