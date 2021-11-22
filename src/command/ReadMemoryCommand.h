@@ -1,0 +1,10 @@
+#ifndef PROCVIEW_READMEMORYCOMMAND_H
+#define PROCVIEW_READMEMORYCOMMAND_H
+
+
+class ReadMemoryCommand {
+
+};
+
+
+#endif //PROCVIEW_READMEMORYCOMMAND_H
