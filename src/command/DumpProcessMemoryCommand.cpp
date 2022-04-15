@@ -7,6 +7,6 @@ std::string DumpProcessMemoryCommand::getDescription() {
 }
 
 
-void DumpProcessMemoryCommand::execute(std::vector<std::string> args) {
+void DumpProcessMemoryCommand::execute() {
 
 }

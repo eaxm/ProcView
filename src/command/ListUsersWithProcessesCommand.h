@@ -5,13 +5,14 @@
 #include "Command.h"
 #include <string>
 #include <map>
+#include "../memlib/Process.h"
 
 class ListUsersWithProcessesCommand : public Command {
 public:
     std::string getDescription() override;
 
 private:
-    void execute(std::vector<std::string> args) override;
+    void execute() override;
     std::string description = "List users with processes";
 };
 

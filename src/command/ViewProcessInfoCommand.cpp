@@ -1,10 +1,10 @@
 #include "ViewProcessInfoCommand.h"
 
-std::string ViewProcessInfoCommand::getDescription() {
 
-    return description;
+void ViewProcessInfoCommand::execute() {
+
 }
 
-void ViewProcessInfoCommand::execute(std::vector<std::string> args) {
-
+ViewProcessInfoCommand::ViewProcessInfoCommand() {
+    Command::description = "View process info";
 }

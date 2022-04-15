@@ -2,13 +2,14 @@
 #define PROCVIEW_LISTPROCESSESCOMMAND_H
 
 #include "Command.h"
-
+#include "../memlib/Process.h"
 
 class ListProcessesCommand : public Command {
 public:
-    std::string getDescription() override;
+    ListProcessesCommand();
+
 private:
-    void execute(std::vector<std::string> args) override;
+    void execute() override;
     std::string description = "List processes";
 };
 

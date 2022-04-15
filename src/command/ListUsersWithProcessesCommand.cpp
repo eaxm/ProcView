@@ -4,7 +4,7 @@ std::string ListUsersWithProcessesCommand::getDescription() {
     return description;
 }
 
-void ListUsersWithProcessesCommand::execute(std::vector<std::string> args) {
+void ListUsersWithProcessesCommand::execute() {
 
     std::vector<Process> procList = Process::getProcessList();
     std::map<std::string, int> userProcessAmountMap;

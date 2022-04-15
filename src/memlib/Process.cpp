@@ -185,9 +185,9 @@ std::string Process::getModulePath(std::string line)
     std::string path = "";
 
     int startPosition = 73;
-    if (line.length() > 73)
+    if (line.length() > startPosition)
     {
-        for (int i = 73; i < line.length(); i++)
+        for (int i = startPosition; i < line.length(); i++)
         {
             path += line.at(i);
         }

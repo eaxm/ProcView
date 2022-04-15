@@ -5,9 +5,10 @@
 
 class ViewProcessInfoCommand : public Command {
 public:
-    std::string getDescription() override;
+    ViewProcessInfoCommand();
+
 private:
-    void execute(std::vector<std::string> args) override;
+    void execute() override;
     std::string description = "View process info";
 };
 
