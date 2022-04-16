@@ -9,11 +9,12 @@
 #include <fstream>
 #include <sys/uio.h>
 #include <exception>
-//#include <stdexcept>
 #include <vector>
 #include <pwd.h>
 #include <sys/stat.h>
 #include "exception/ProcessNotFound.h"
+#include "MemoryRegion.h"
+#include <iterator>
 
 
 // TODO: Current name is limited to a small amount of chars
@@ -27,20 +28,23 @@ private:
     inline static const std::string COMM_NAME = "/comm";
 
     std::string processName;
-    long pid;
+    int pid;
     std::string user;
 
     std::string getModulePath(std::string line);
 
     friend std::ostream &operator<<(std::ostream &, const Process &);
-
+    int min = 10;
+    int max = 1;
 public:
 
-    Process(long pid);
+    Process(int pid);
 
-    Process(long pid, std::string processName, std::string user);
+    Process(int pid, std::string processName, std::string user);
 
     static Process getFirstProcessByName(std::string processName);
+
+    //static Process getProcessByPid(int pid);
 
     static std::vector<Process> getProcessesByName(std::string processName);
 
@@ -48,27 +52,17 @@ public:
 
     void read(unsigned long address, size_t length, void *buffer);
 
-    /**
-     * Check if process still exists
-     * @return true when process still exists
-     */
-    bool check();
 
     std::stringstream getMaps();
 
     void printModules();
 
+    // TODO: unsigned long
     long getModuleBaseAddr(std::string moduleName);
 
-    // TODO: dumpMemory
-    // TODO: findSignature
-    // TODO: hook -> log args to file & std out
-    // packet
-    // write/read
-    // TODO: inject
-    // TODO: getLoadedLibraries
-    // TODO: scan
-    // choose section
+    std::vector<MemoryRegion> getMemoryRegions();
+
+    unsigned long getSpace();
 
     const inline long getPid() {
         return pid;
@@ -78,7 +72,7 @@ public:
         return processName;
     }
 
-    const inline std::string getUser(){
+    const inline std::string getUser() {
         return user;
     }
 };

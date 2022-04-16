@@ -2,6 +2,7 @@
 #define PROCVIEW_VIEWPROCESSINFOCOMMAND_H
 
 #include "Command.h"
+#include "../memlib/Process.h"
 
 class ViewProcessInfoCommand : public Command {
 public:
@@ -9,7 +10,6 @@ public:
 
 private:
     void execute() override;
-    std::string description = "View process info";
 };
 
 
