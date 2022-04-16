@@ -2,7 +2,7 @@
 #define PROCVIEW_LISTPROCESSESCOMMAND_H
 
 #include "Command.h"
-#include "../memlib/Process.h"
+#include "../os/Process.h"
 
 class ListProcessesCommand : public Command {
 public:

@@ -2,7 +2,7 @@
 #define PROCVIEW_VIEWPROCESSINFOCOMMAND_H
 
 #include "Command.h"
-#include "../memlib/Process.h"
+#include "../os/Process.h"
 
 class ViewProcessInfoCommand : public Command {
 public:

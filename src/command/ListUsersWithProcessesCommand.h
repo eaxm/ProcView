@@ -5,7 +5,7 @@
 #include "Command.h"
 #include <string>
 #include <map>
-#include "../memlib/Process.h"
+#include "../os/Process.h"
 
 class ListUsersWithProcessesCommand : public Command {
 public:
