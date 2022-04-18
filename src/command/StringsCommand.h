@@ -5,6 +5,9 @@
 #include "../os/Process.h"
 #include <stdexcept>
 
+/**
+ * Scans memory of process for strings and prints them to stdout
+ */
 class StringsCommand : public Command {
 
 public:

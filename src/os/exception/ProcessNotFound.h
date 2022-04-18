@@ -3,6 +3,9 @@
 
 #include <exception>
 
+/**
+ * Thrown when process was not found
+ */
 class ProcessNotFoundException : public std::exception
 {
 

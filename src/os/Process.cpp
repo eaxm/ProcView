@@ -297,7 +297,7 @@ unsigned long Process::getResidentSpace() {
 
     // TODO
     for (auto memoryRegion: memoryRegions) {
-        if ((memoryRegion.getPath() == "[stack]" || memoryRegion.getPath() == "[heap]") || (!memoryRegion.getPath().empty() && memoryRegion.isPrivatePerm()))
+        if ((memoryRegion.getPath() == "[stack]" || memoryRegion.getPath() == "[heap]") || (!memoryRegion.getPath().empty() && memoryRegion.isPrivatePerm() && memoryRegion.isRead()))
             space += memoryRegion.getEndAddress() - memoryRegion.getStartAddress(); // TODO: Change to getSpace
     }
 

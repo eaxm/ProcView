@@ -7,6 +7,9 @@
 #include <map>
 #include "../os/Process.h"
 
+/**
+ * Lists users with their number of processes
+ */
 class ListUsersWithProcessesCommand : public Command {
 public:
     std::string getDescription() override;

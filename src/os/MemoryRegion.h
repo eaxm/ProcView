@@ -4,6 +4,9 @@
 #include <string>
 #include <stdexcept>
 
+/**
+ * Represents a memory region in a process
+ */
 class MemoryRegion {
 public:
     MemoryRegion(unsigned long startAddress, unsigned long endAddress, bool readable, bool writable, bool executable,

@@ -4,12 +4,16 @@
 
 #include "Command.h"
 
+/**
+ * Dumps processes memory to file
+ * Only includes certain memory regions
+ */
 class DumpProcessMemoryCommand : public Command{
 public:
-    std::string getDescription() override;
+    DumpProcessMemoryCommand();
+
 private:
     void execute() override;
-    std::string description = "Dump process memory";
 };
 
 

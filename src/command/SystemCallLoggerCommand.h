@@ -6,6 +6,9 @@
 #include <sys/reg.h>
 #include <sys/wait.h>
 
+/*
+ * Attaches to the given process and logs system calls
+ */
 class SystemCallLoggerCommand : public Command {
 
 public:

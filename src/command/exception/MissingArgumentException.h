@@ -2,8 +2,10 @@
 #define PROCVIEW_MISSINGARGUMENTEXCEPTION_H
 
 #include <exception>
-#include <string>
 
+/**
+ * Thrown when a command is missing an argument
+ */
 class MissingArgumentException : public std::exception {
 private:
     std::string msg = "Unknown argument";

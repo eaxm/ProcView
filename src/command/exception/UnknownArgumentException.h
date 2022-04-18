@@ -3,6 +3,9 @@
 
 #include <exception>
 
+/**
+ * Thrown when a command received an undefined argument
+ */
 class UnknownArgumentException : public std::exception {
 private:
     std::string msg = "Unknown argument";

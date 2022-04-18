@@ -11,6 +11,9 @@
 #include "exception/UnknownArgumentException.h"
 #include "exception/MissingArgumentException.h"
 
+/**
+ * Class from which commands should inherit
+ */
 class Command {
 public:
     void start(std::string input);
