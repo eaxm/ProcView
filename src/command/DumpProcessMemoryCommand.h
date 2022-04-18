@@ -14,6 +14,7 @@ public:
     DumpProcessMemoryCommand();
 
 private:
+    static const unsigned long MAX_WRITE = 1e9; // 1 GB
     void execute() override;
 };
 

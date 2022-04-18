@@ -17,6 +17,7 @@ void DumpProcessMemoryCommand::execute() {
     std::ofstream of;
     of.open(dumpName, std::ios_base::app);
 
+    unsigned long writeCounter = 0;
 
     for(auto m : memoryRegions){
         if (m.isShared() || m.getPath().empty() || !m.isRead())
@@ -24,9 +25,18 @@ void DumpProcessMemoryCommand::execute() {
 
         unsigned long size = m.getSpace();
         char *buffer = (char *) std::malloc(size);
-        p.read(m.getStartAddress(), size, buffer);
 
-        of.write(buffer, size);
+        if(p.read(m.getStartAddress(), size, buffer)){
+            writeCounter += size;
+            if(writeCounter >= MAX_WRITE){
+                std::cout << "Process dump exceeded MAX_WRITE size" << std::endl;
+                std::free(buffer);
+                return;
+            }
+
+            of.write(buffer, size);
+        }
+
 
 
         std::free(buffer);
