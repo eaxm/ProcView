@@ -6,7 +6,7 @@
 #include "command/ListUsersWithProcessesCommand.h"
 #include "command/SystemCallLoggerCommand.h"
 #include "command/StringsCommand.h"
-#include "command/DumpProcessMemoryCommand.h"
+#include "command/ReadMemoryCommand.h"
 
 int main() {
 
@@ -20,7 +20,7 @@ int main() {
     commands.push_back(std::make_unique<SystemCallLoggerCommand>());
     commands.push_back(std::make_unique<StringsCommand>());
     commands.push_back(std::make_unique<DumpProcessMemoryCommand>());
-
+    commands.push_back(std::make_unique<ReadMemoryCommand>());
 
     bool proceed = true;
 

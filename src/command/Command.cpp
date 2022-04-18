@@ -39,8 +39,8 @@ void Command::parseArgs(std::vector<std::string> args) {
 bool Command::registerArg(std::string argName) {
     if(argSet.contains(argName))
         return false;
-    argSet.insert(argName);
-    return true;
+    return argSet.insert(argName).second; // second value contains bool that is true if the element was inserted
+
 }
 
 

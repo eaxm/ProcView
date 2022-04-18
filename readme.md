@@ -15,11 +15,11 @@ I'm always open for tips via GitHub issues.
 - Read/Write process memory
 - Search process for strings
 - Log system calls
-
+- Dump process
 
 #### TODO:
 
-- Dump process
+
 - Scan for signature/byte sequence
 - Inject shared object into target process that hooks functions and sends arguments via IPC to the analyzer process
 - Communicate with kernel module that hooks system calls by overwriting the system call table

@@ -11,6 +11,8 @@
 #include "exception/UnknownArgumentException.h"
 #include "exception/MissingArgumentException.h"
 
+
+// TODO: Create extra argument class to differentiate between required and optional arguments and to add bool args
 /**
  * Class from which commands should inherit
  */
@@ -21,8 +23,8 @@ public:
 
 protected:
     bool registerArg(std::string argName);
-    std::map<std::string, std::string> argMap;
-    std::set<std::string> argSet;
+    std::map<std::string, std::string> argMap; // contains the values of the parsed arguments
+    std::set<std::string> argSet; // registered arguments are in here
     std::string description;
 
 private:
