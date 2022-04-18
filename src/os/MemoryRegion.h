@@ -45,6 +45,8 @@ public:
 
     void setPath(const std::string &path);
 
+    unsigned long getSpace();
+
 private:
     unsigned long startAddress;
     unsigned long endAddress;

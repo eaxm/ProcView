@@ -17,7 +17,6 @@
 #include <iterator>
 
 
-// TODO: Current name is limited to a small amount of chars
 /**
  * Class to interact with a process
  */
@@ -50,7 +49,7 @@ public:
 
     static std::vector<Process> getProcessList();
 
-    void read(unsigned long address, size_t length, void *buffer);
+    bool read(unsigned long address, size_t length, void *buffer);
 
 
     std::stringstream getMaps();
@@ -62,9 +61,11 @@ public:
 
     std::vector<MemoryRegion> getMemoryRegions();
 
-    unsigned long getSpace();
+    unsigned long getVirtualMemorySpace();
 
-    const inline long getPid() {
+    unsigned long getResidentSpace();
+
+    const inline int getPid() {
         return pid;
     }
 

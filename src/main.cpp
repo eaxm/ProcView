@@ -4,6 +4,8 @@
 #include "command/ViewProcessInfoCommand.h"
 #include "command/DumpProcessMemoryCommand.h"
 #include "command/ListUsersWithProcessesCommand.h"
+#include "command/SystemCallLoggerCommand.h"
+#include "command/StringsCommand.h"
 
 int main() {
 
@@ -14,6 +16,8 @@ int main() {
     commands.push_back(std::make_unique<ListUsersWithProcessesCommand>());
     commands.push_back(std::make_unique<ViewProcessInfoCommand>());
     commands.push_back(std::make_unique<DumpProcessMemoryCommand>());
+    commands.push_back(std::make_unique<SystemCallLoggerCommand>());
+    commands.push_back(std::make_unique<StringsCommand>());
 
 
     bool proceed = true;
@@ -30,6 +34,11 @@ int main() {
 
         std::string input = "";
         std::getline(std::cin, input);
+
+        if(input.empty()){
+            std::cout << "Empty input" << std::endl;
+            continue;
+        }
 
         std::string optionNumber = input.substr(0, input.find(' '));
 

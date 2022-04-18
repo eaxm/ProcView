@@ -64,7 +64,7 @@ std::vector<Process> Process::getProcessList() {
     return procList;
 }
 
-void Process::read(unsigned long address, size_t length, void *buffer) {
+bool Process::read(unsigned long address, size_t length, void *buffer) {
 
     struct iovec local[1];
     local[0].iov_base = buffer;
@@ -75,7 +75,8 @@ void Process::read(unsigned long address, size_t length, void *buffer) {
     remote[0].iov_len = length;
 
     ssize_t read = process_vm_readv(pid, local, 1, remote, 1, 0);
-    std::cout << "bytes read: " << read << std::endl;
+    return (read != -1);
+    //std::cout << "bytes read: " << read << std::endl;
 }
 
 std::stringstream Process::getMaps() {
@@ -196,6 +197,7 @@ std::vector<MemoryRegion> Process::getMemoryRegions() {
                                         std::istream_iterator<std::string>());
 
 
+        // TODO: Remove
         //std::cout << "values amount: " << values.size() << std::endl;
         if (values.size() > max)
             max = values.size();
@@ -275,13 +277,28 @@ std::ostream &operator<<(std::ostream &strm, const Process &p) {
     return strm << "Process(name: " << p.processName << "; pid: " << p.pid << ")";
 }
 
-unsigned long Process::getSpace() {
+unsigned long Process::getVirtualMemorySpace() {
     std::vector<MemoryRegion> memoryRegions = getMemoryRegions();
 
     unsigned long space = 0;
 
-    for(auto memoryRegion : memoryRegions){
-        space += memoryRegion.getEndAddress()-memoryRegion.getStartAddress();
+    for (auto memoryRegion: memoryRegions) {
+        space += memoryRegion.getEndAddress() - memoryRegion.getStartAddress(); // TODO: Change to getSpace
+    }
+
+    return space;
+}
+
+// TODO: Rename, it's not accurate
+unsigned long Process::getResidentSpace() {
+    std::vector<MemoryRegion> memoryRegions = getMemoryRegions();
+
+    unsigned long space = 0;
+
+    // TODO
+    for (auto memoryRegion: memoryRegions) {
+        if ((memoryRegion.getPath() == "[stack]" || memoryRegion.getPath() == "[heap]") || (!memoryRegion.getPath().empty() && memoryRegion.isPrivatePerm()))
+            space += memoryRegion.getEndAddress() - memoryRegion.getStartAddress(); // TODO: Change to getSpace
     }
 
     return space;

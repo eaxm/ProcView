@@ -3,6 +3,9 @@
 
 #include "Command.h"
 #include "../os/Process.h"
+#include <sys/ptrace.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 class ViewProcessInfoCommand : public Command {
 public:

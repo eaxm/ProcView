@@ -7,7 +7,7 @@ void ListProcessesCommand::execute() {
     std::vector<Process> procList = Process::getProcessList();
 
     std::string argUser = argMap["--user"];
-    std::string argProcName = argMap["--procName"];
+    std::string argProcName = argMap["--proc-name"];
 
 
     if(!argUser.empty()){
@@ -25,7 +25,7 @@ void ListProcessesCommand::execute() {
     std::printf("%s\n", std::string(63, '_').c_str());
     std::printf("| %-6s| %-30s| %-20s|\n", "PID", "PROCESS NAME", "USER");
     for (Process item: procList) {
-        std::printf("| %-6ld| %-30s| %-20s|\n", item.getPid(), item.getProcessName().c_str(), item.getUser().c_str());
+        std::printf("| %-6d| %-30s| %-20s|\n", item.getPid(), item.getProcessName().c_str(), item.getUser().c_str());
     }
     std::printf("%s\n", std::string(63, '-').c_str());
 }
@@ -34,5 +34,5 @@ ListProcessesCommand::ListProcessesCommand() {
     Command::description = "List processes";
 
     Command::registerArg("--user");
-    Command::registerArg("--procName");
+    Command::registerArg("--proc-name");
 }
