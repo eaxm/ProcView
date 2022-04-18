@@ -32,7 +32,7 @@ void StringsCommand::execute() {
         if (m.isShared() || m.getPath().empty() || !m.isRead())
             continue;
 
-        unsigned long size = m.getEndAddress() - m.getStartAddress();
+        unsigned long size = m.getSpace();
         char *buffer = (char *) std::malloc(size);
         p.read(m.getStartAddress(), size, buffer);
 
