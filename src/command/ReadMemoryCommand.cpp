@@ -1,7 +1,7 @@
 #include "ReadMemoryCommand.h"
 
 ReadMemoryCommand::ReadMemoryCommand() {
-    description = "Read memory";
+    description = "Read from process memory";
 
     registerArg(Argument("--pid", true));
     registerArg(Argument("--address", true));       // address is relative to module if module is specified
@@ -25,7 +25,7 @@ void ReadMemoryCommand::execute() {
 
     if (!p.read(address, amount, buffer)) {
         std::cout << "Could not read memory" << std::endl;
-        free(buffer);
+        std::free(buffer);
         return;
     }
 
@@ -36,5 +36,5 @@ void ReadMemoryCommand::execute() {
     }
     std::cout << std::endl;
 
-    free(buffer);
+    std::free(buffer);
 }

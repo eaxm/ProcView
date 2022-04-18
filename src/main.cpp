@@ -7,6 +7,7 @@
 #include "command/SystemCallLoggerCommand.h"
 #include "command/StringsCommand.h"
 #include "command/ReadMemoryCommand.h"
+#include "command/WriteMemoryCommand.h"
 
 int main() {
 
@@ -21,6 +22,7 @@ int main() {
     commands.push_back(std::make_unique<StringsCommand>());
     commands.push_back(std::make_unique<DumpProcessMemoryCommand>());
     commands.push_back(std::make_unique<ReadMemoryCommand>());
+    commands.push_back(std::make_unique<WriteMemoryCommand>());
 
     bool proceed = true;
 
@@ -33,7 +35,7 @@ int main() {
             int commandNumber = i + 1;
             std::cout << "[" << commandNumber << "]\t" << commands.at(i)->getDescription() << std::endl;
         }
-        std::cout << "[0] Exit" << std::endl;
+        std::cout << "[0]\tExit" << std::endl;
         std::cout << "Option: ";
 
         std::string input = "";

@@ -51,6 +51,7 @@ public:
 
     bool read(unsigned long address, size_t length, void *buffer);
 
+    bool write(unsigned long address, size_t length, void *buffer);
 
     std::stringstream getMaps();
 

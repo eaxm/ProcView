@@ -16,7 +16,6 @@ public:
 
 private:
     void execute() override;
-    std::string description = "List users with processes";
 };
 
 

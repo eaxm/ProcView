@@ -64,20 +64,7 @@ std::vector<Process> Process::getProcessList() {
     return procList;
 }
 
-bool Process::read(unsigned long address, size_t length, void *buffer) {
 
-    struct iovec local[1];
-    local[0].iov_base = buffer;
-    local[0].iov_len = length;
-
-    struct iovec remote[1];
-    remote[0].iov_base = (void *) address;
-    remote[0].iov_len = length;
-
-    ssize_t read = process_vm_readv(pid, local, 1, remote, 1, 0);
-    return (read != -1);
-    //std::cout << "bytes read: " << read << std::endl;
-}
 
 std::stringstream Process::getMaps() {
     std::string mapFilePath = PROC_PATH + std::to_string(pid) + "/maps";
@@ -302,4 +289,33 @@ unsigned long Process::getResidentSpace() {
     }
 
     return space;
+}
+
+bool Process::read(unsigned long address, size_t length, void *buffer) {
+
+    struct iovec local[1];
+    local[0].iov_base = buffer;
+    local[0].iov_len = length;
+
+    struct iovec remote[1];
+    remote[0].iov_base = (void *) address;
+    remote[0].iov_len = length;
+
+    ssize_t read = process_vm_readv(pid, local, 1, remote, 1, 0);
+    return (read != -1);
+    //std::cout << "bytes read: " << read << std::endl;
+}
+
+bool Process::write(unsigned long address, size_t length, void *buffer) {
+
+    struct iovec local[1];
+    local[0].iov_base = buffer;
+    local[0].iov_len = length;
+
+    struct iovec remote[1];
+    remote[0].iov_base = (void *) address;
+    remote[0].iov_len = length;
+
+    ssize_t write = process_vm_writev(pid, local, 1, remote, 1, 0);
+    return (write != -1);
 }
