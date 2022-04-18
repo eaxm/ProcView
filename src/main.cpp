@@ -24,12 +24,14 @@ int main() {
 
     bool proceed = true;
 
+    std::cout << "ProcView" << std::endl;
+    std::cout << "Commands can be selected via the [number]" << std::endl;
+    std::cout << "Usage of a command can be viewed via the --help flag. Example: 1 --help" << std::endl << std::endl;
+
     while (proceed) {
         for (int i = 0; i < commands.size(); i++) {
             int commandNumber = i + 1;
             std::cout << "[" << commandNumber << "]\t" << commands.at(i)->getDescription() << std::endl;
-            std::cout << "\tUsage: " << std::endl;
-
         }
         std::cout << "[0] Exit" << std::endl;
         std::cout << "Option: ";

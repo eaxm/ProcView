@@ -12,7 +12,7 @@
  */
 class ListUsersWithProcessesCommand : public Command {
 public:
-    std::string getDescription() override;
+    ListUsersWithProcessesCommand();
 
 private:
     void execute() override;

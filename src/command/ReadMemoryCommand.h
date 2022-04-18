@@ -11,6 +11,7 @@ public:
 
 private:
     void execute() override;
+    const int DEFAULT_AMOUNT_BYTES = 1;
 };
 
 

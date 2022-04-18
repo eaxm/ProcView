@@ -3,22 +3,21 @@
 StringsCommand::StringsCommand() {
     description = "Scan process for strings";
 
-    registerArg("--pid");
-    registerArg("--min-length");
+    registerArg(Argument("--pid", true));
+    registerArg(Argument("--min-length", false));
 }
 
 void StringsCommand::execute() {
+    int pid = argMap.at("--pid").getValueAsInt();
 
-    std::string strPid = argMap["--pid"]; // TODO: Handle empty arg
-    int pid = std::stoi(strPid);
-
-    std::string strMinLength = argMap["--min-length"];
     int currentMinLength = DEFAULT_MIN_LENGTH;
-    if(!strMinLength.empty()){
-        currentMinLength = std::stoi(strMinLength);
+    auto argMinLength = argMap.at("--min-length");
+    if(argMinLength.hasValue()){
+        currentMinLength = argMap.at("--min-length").getValueAsInt();
         if(currentMinLength <= 0)
             throw std::invalid_argument("minLength is below 1");
     }
+
 
     // TODO: Add argument to print module and address
 

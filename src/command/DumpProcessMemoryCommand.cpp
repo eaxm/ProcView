@@ -1,8 +1,7 @@
 #include "DumpProcessMemoryCommand.h"
 
 void DumpProcessMemoryCommand::execute() {
-    std::string strPid = argMap["--pid"];
-    int pid = std::stoi(strPid);
+    int pid = argMap.at("--pid").getValueAsInt();
 
 
     Process p(pid);
@@ -11,7 +10,7 @@ void DumpProcessMemoryCommand::execute() {
 
     std::time_t time = std::time(nullptr);
 
-    std::string dumpName = "proc_dump_" + std::to_string(time) + "_" + strPid;
+    std::string dumpName = "proc_dump_" + std::to_string(time) + "_" + std::to_string(pid);
     std::cout << "dump name: " << dumpName << std::endl;
 
 
@@ -40,5 +39,5 @@ void DumpProcessMemoryCommand::execute() {
 DumpProcessMemoryCommand::DumpProcessMemoryCommand() {
     description = "Dump process memory";
 
-    registerArg("--pid");
+    registerArg(Argument("--pid", true));
 }

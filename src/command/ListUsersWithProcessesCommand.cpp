@@ -1,8 +1,5 @@
 #include "ListUsersWithProcessesCommand.h"
 
-std::string ListUsersWithProcessesCommand::getDescription() {
-    return description;
-}
 
 void ListUsersWithProcessesCommand::execute() {
 
@@ -22,4 +19,8 @@ void ListUsersWithProcessesCommand::execute() {
     }
     std::printf("%s\n", std::string(45, '-').c_str());
 
+}
+
+ListUsersWithProcessesCommand::ListUsersWithProcessesCommand() {
+    description = "List users with processes";
 }

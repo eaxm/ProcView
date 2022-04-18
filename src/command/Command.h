@@ -10,9 +10,8 @@
 #include <set>
 #include "exception/UnknownArgumentException.h"
 #include "exception/MissingArgumentException.h"
+#include "Argument.h"
 
-
-// TODO: Create extra argument class to differentiate between required and optional arguments and to add bool args
 /**
  * Class from which commands should inherit
  */
@@ -21,10 +20,11 @@ public:
     void start(std::string input);
     virtual std::string getDescription();
 
+    Command();
+
 protected:
-    bool registerArg(std::string argName);
-    std::map<std::string, std::string> argMap; // contains the values of the parsed arguments
-    std::set<std::string> argSet; // registered arguments are in here
+    bool registerArg(Argument arg);
+    std::map<std::string, Argument> argMap; // fixme: argument name is currently stored twice
     std::string description;
 
 private:

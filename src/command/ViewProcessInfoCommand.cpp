@@ -2,13 +2,10 @@
 
 
 void ViewProcessInfoCommand::execute() {
-    std::string strPid = argMap["--pid"]; // TODO: Handle empty entry
-
-    int pid = std::stoi(strPid);
+    int pid = argMap.at("--pid").getValueAsInt();
 
     Process p(pid);
 
-    // std::cout << p.getMaps().str() << std::endl;
     std::vector<MemoryRegion> memoryRegions = p.getMemoryRegions();
     std::cout << "mem region size: " << memoryRegions.size() << std::endl;
 
@@ -26,6 +23,7 @@ void ViewProcessInfoCommand::execute() {
 }
 
 ViewProcessInfoCommand::ViewProcessInfoCommand() {
-    Command::description = "View process info";
-    Command::registerArg("--pid");
+    description = "View process info";
+
+    registerArg(Argument("--pid", true));
 }

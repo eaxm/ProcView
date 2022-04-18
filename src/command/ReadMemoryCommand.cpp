@@ -3,22 +3,20 @@
 ReadMemoryCommand::ReadMemoryCommand() {
     description = "Read memory";
 
-    registerArg("--pid");
-    registerArg("--address");       // address is relative to module if module is specified
-    registerArg("--amount");        // amount of bytes to read
-    registerArg("--file-path");     // path name
+    registerArg(Argument("--pid", true));
+    registerArg(Argument("--address", true));       // address is relative to module if module is specified
+    registerArg(Argument("--amount", false));       // amount of bytes to read
+    registerArg(Argument("--file-path", false));    // path name
 }
 
 void ReadMemoryCommand::execute() {
+    int pid = argMap.at("--pid").getValueAsInt();
+    unsigned long address = argMap.at("--address").getValueAsUnsignedLong(16);
 
-    std::string strPid = argMap["--pid"]; // in dec
-    int pid = std::stoi(strPid);
-
-    std::string strAddress = argMap["--address"]; // in hex
-    unsigned long address = std::stoul(strAddress, 0, 16);
-
-    std::string strAmount = argMap["--amount"]; // in dec
-    int amount = std::stoi(strAmount);
+    int amount = DEFAULT_AMOUNT_BYTES;
+    auto argAmount = argMap.at("--amount");
+    if(argAmount.hasValue())
+        amount = argAmount.getValueAsInt();
 
 
     Process p(pid);

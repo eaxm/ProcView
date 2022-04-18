@@ -2,13 +2,12 @@
 
 SystemCallLoggerCommand::SystemCallLoggerCommand() {
     description = "Logs system calls";
-    registerArg("--pid");
+    registerArg(Argument("--pid", true));
 }
 
 
 void SystemCallLoggerCommand::execute() {
-    std::string strPid = argMap["--pid"];
-    int pid = std::stoi(strPid);
+    int pid = argMap.at("--pid").getValueAsInt();
 
     long ret = ptrace(PTRACE_ATTACH, pid, NULL, NULL);
     if (ret == -1) {
