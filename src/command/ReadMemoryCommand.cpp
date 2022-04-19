@@ -23,6 +23,7 @@ void ReadMemoryCommand::execute() {
 
     std::byte *buffer = (std::byte *) std::malloc(amount);
 
+    // TODO: Check memory region permissions
     if (!p.read(address, amount, buffer)) {
         std::cout << "Could not read memory" << std::endl;
         std::free(buffer);

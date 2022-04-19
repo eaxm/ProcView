@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 #include "command/Command.h"
 #include "command/ListProcessesCommand.h"
 #include "command/ViewProcessInfoCommand.h"
@@ -9,9 +10,16 @@
 #include "command/ReadMemoryCommand.h"
 #include "command/WriteMemoryCommand.h"
 
+/**
+ * Entrypoint
+ * The user can invoke shown commands via number input.
+ * Commands can have required and optional arguments. The arguments can be viewed via the --help flag.
+ */
 int main() {
 
-    // TODO: Check for root privileges and print info if not granted
+    if (geteuid()) {
+        std::cout << "You don't have root permissions. Some commands won't work." << std::endl << std::endl;
+    }
 
     std::vector<std::unique_ptr<Command>> commands;
     commands.push_back(std::make_unique<ListProcessesCommand>());
@@ -38,10 +46,11 @@ int main() {
         std::cout << "[0]\tExit" << std::endl;
         std::cout << "Option: ";
 
-        std::string input = "";
+        // fixme: Infinite loop on ctrl+d
+        std::string input;
         std::getline(std::cin, input);
 
-        if(input.empty()){
+        if (input.empty()) {
             std::cout << "Empty input" << std::endl;
             continue;
         }
@@ -66,7 +75,7 @@ int main() {
                 std::cout << e.what() << std::endl;
             }
 
-        }else {
+        } else {
             std::cout << "Invalid option" << std::endl;
         }
 

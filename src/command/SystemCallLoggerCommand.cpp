@@ -1,7 +1,7 @@
 #include "SystemCallLoggerCommand.h"
 
 SystemCallLoggerCommand::SystemCallLoggerCommand() {
-    description = "Logs system calls";
+    description = "Log system calls";
     registerArg(Argument("--pid", true));
 }
 
