@@ -9,6 +9,8 @@ void ViewProcessInfoCommand::execute() {
     std::vector<MemoryRegion> memoryRegions = p.getMemoryRegions();
     std::cout << "mem region size: " << memoryRegions.size() << std::endl;
 
+    std::cout << "Process name: " << p.getProcessName() << std::endl;
+
     unsigned long space = p.getVirtualMemorySpace();
     std::cout << "space: " << space << " bytes" << std::endl;
     std::cout << "space: " << (space / 1e6f) << " megabytes" << std::endl;

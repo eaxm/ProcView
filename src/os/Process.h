@@ -12,7 +12,7 @@
 #include <vector>
 #include <pwd.h>
 #include <sys/stat.h>
-#include "exception/ProcessNotFound.h"
+#include "exception/ProcessNotFoundException.h"
 #include "MemoryRegion.h"
 #include <iterator>
 
@@ -30,20 +30,14 @@ private:
     int pid;
     std::string user;
 
-    std::string getModulePath(std::string line);
-
     friend std::ostream &operator<<(std::ostream &, const Process &);
-    int min = 10;
-    int max = 1;
+    std::stringstream getMaps();
+
 public:
 
     Process(int pid);
 
-    Process(int pid, std::string processName, std::string user);
-
     static Process getFirstProcessByName(std::string processName);
-
-    //static Process getProcessByPid(int pid);
 
     static std::vector<Process> getProcessesByName(std::string processName);
 
@@ -53,12 +47,7 @@ public:
 
     bool write(unsigned long address, size_t length, void *buffer);
 
-    std::stringstream getMaps();
-
-    void printModules();
-
-    // TODO: unsigned long
-    long getModuleBaseAddr(std::string moduleName);
+    unsigned long getModuleBaseAddress(std::string moduleName);
 
     std::vector<MemoryRegion> getMemoryRegions();
 
@@ -66,17 +55,11 @@ public:
 
     unsigned long getResidentSpace();
 
-    const inline int getPid() {
-        return pid;
-    }
+    const std::string &getProcessName() const;
 
-    const inline std::string getProcessName() {
-        return processName;
-    }
+    int getPid() const;
 
-    const inline std::string getUser() {
-        return user;
-    }
+    const std::string &getUser() const;
 };
 
 

@@ -1,22 +1,43 @@
 #include "Process.h"
 
-Process Process::getFirstProcessByName(std::string processName) {
-    std::vector<Process> procList = Process::getProcessList();
-
-    throw ProcessNotFoundException("Process " + processName + " not found");
-    // TODO: Throw exception
-}
-
-
+/**
+ * Constructor for Process.
+ * Reads process data for the given pid from the proc directory.
+ * @param pid process id
+ */
 Process::Process(int pid) {
     this->pid = pid;
+
+    std::string pidProcPath = PROC_PATH + std::to_string(pid);
+
+    if(!std::filesystem::is_directory(pidProcPath))
+        throw ProcessNotFoundException("Could not find directory: " + pidProcPath);
+
+    std::string commPath = pidProcPath.append(COMM_NAME);
+    if(!std::filesystem::is_regular_file(commPath))
+        throw ProcessNotFoundException("Could not find file: " + commPath);
+
+    std::ifstream t(commPath);
+    if (!t.good())
+        throw ProcessNotFoundException();
+
+    std::string commProcessName;
+    getline(t, commProcessName);
+    this->processName = commProcessName;
+
+    struct stat info;
+    if(stat(pidProcPath.c_str(), &info) == -1)
+        throw ProcessNotFoundException();
+
+    struct passwd *pw = getpwuid(info.st_uid);
+
+    if(pw == nullptr)
+        throw ProcessNotFoundException();
+
+    this->user = pw->pw_name;
+
 }
 
-Process::Process(int pid, std::string processName, std::string user) {
-    this->pid = pid;
-    this->processName = processName;
-    this->user = user;
-}
 
 /**
  * Get list of currently running processes
@@ -35,37 +56,27 @@ std::vector<Process> Process::getProcessList() {
         if (!std::all_of(dirName.begin(), dirName.end(), ::isdigit))
             continue;
 
-        std::string commPath = entry.path().string().append(COMM_NAME);
+        Process p(std::stoi(dirName));
+        procList.push_back(p);
 
-        if (std::filesystem::is_regular_file(commPath)) {
-
-            std::ifstream t(commPath);
-            if (!t.good())
-                continue;
-
-            std::string commProcessName;
-            getline(t, commProcessName);
-
-            struct stat info;
-            stat(entry.path().c_str(), &info);
-            struct passwd *pw = getpwuid(info.st_uid);
-
-            std::string dirUser = pw->pw_name;
-            //std::cout << "pid: " << dirName << std::endl;
-            //std::cout << "process name: " << commProcessName << std::endl;
-            procList.push_back(Process(std::stol(dirName), commProcessName, dirUser));
-            // TODO: ? free(pw);
-
-
-            //t.close();
-        }
     }
 
     return procList;
 }
 
+// TODO: Implementation
+Process Process::getFirstProcessByName(std::string processName) {
+    std::vector<Process> procList = Process::getProcessList();
 
+    throw ProcessNotFoundException("Not implemented yet");
+    //throw ProcessNotFoundException("Process " + processName + " not found");
 
+}
+
+/**
+ * Returns maps of process from the maps file
+ * @return maps in a stringstream
+ */
 std::stringstream Process::getMaps() {
     std::string mapFilePath = PROC_PATH + std::to_string(pid) + "/maps";
     std::ifstream t(mapFilePath);
@@ -75,101 +86,38 @@ std::stringstream Process::getMaps() {
     }
     std::stringstream buffer;
     buffer << t.rdbuf();
-    //std::cout << buffer.str();
 
     return buffer;
-    /*
-    std::vector<std::string> result;
-    std::string item;
-
-    while (getline(buffer, item, '\n'))
-    {
-        result.push_back(item);
-        std::cout << "DBG: " << item << std::endl;
-    }
-*/
-
     // TODO: Close?
 }
 
-void Process::printModules() {
+/**
+ * Returns the starting address of the first memory region whose module name is equal to the given module name.
+ * @param moduleName file path of the loaded module
+ * @return memory address
+ */
+unsigned long Process::getModuleBaseAddress(std::string moduleName) {
 
-    std::cout << getMaps().str();
+    std::vector<MemoryRegion> memoryRegions = getMemoryRegions();
 
-    /*
-    std::string mapFilePath = PROC_PATH + std::to_string(pid) + "/maps";
-    std::ifstream t(mapFilePath);
-    if (!t.is_open())
-    {
-        std::cout << mapFilePath << " not open" << std::endl;
-        return;
+    std::vector<MemoryRegion>::iterator it = std::find_if(memoryRegions.begin(), memoryRegions.end(), [moduleName] (MemoryRegion m){
+        return m.getModulePath() == moduleName;
+    });
+
+    if(it != memoryRegions.end()){
+        std::cout << "memory region found: " << std::hex << it->getStartAddress() << std::endl;
+        return it->getStartAddress();
+    }else{
+        std::cout << "memory region not found." << std::endl;
+        throw ProcessNotFoundException();
     }
-    std::stringstream buffer;
-    buffer << t.rdbuf();
-    //std::cout << buffer.str();
-
-    std::vector<std::string> result;
-    std::string item;
-
-    while (getline(buffer, item, '\n'))
-    {
-        result.push_back(item);
-        std::cout << "DBG: " << item << std::endl;
-    }
-
-    */
-
-    // TODO: Close?
 }
 
-long Process::getModuleBaseAddr(std::string moduleName) {
-
-    std::string item;
-    std::stringstream buffer = getMaps();
-    while (getline(buffer, item, '\n')) {
-        std::string modulePath = getModulePath(item);
-        //std::cout << "DBG: " << modulePath << std::endl;
-
-        std::string s = modulePath;
-        std::string delimiter = "/";
-
-        size_t pos = 0;
-        std::string token;
-
-        size_t last = 0;
-        size_t next = 0;
-        while ((next = s.find(delimiter, last)) != std::string::npos) {
-            std::cout << s.substr(last, next - last) << std::endl;
-            last = next + 1;
-        }
-        //std::cout << s.substr(last) << std::endl;
-        std::string lastPart = s.substr(last);
-
-        if (lastPart == moduleName) {
-            std::string baseAddrStr = item.substr(0, item.find("-", 0));
-            std::cout << "length: " << baseAddrStr.length() << std::endl;
-            std::cout << "FOUND Module: " << lastPart << " at 0x" << baseAddrStr << std::endl;
-
-            return std::stol(baseAddrStr, NULL, 16);
-        }
-    }
-
-    // TODO: Throw an exception
-    return -1;
-}
-
-std::string Process::getModulePath(std::string line) {
-    std::string path = "";
-
-    int startPosition = 73;
-    if (line.length() > startPosition) {
-        for (int i = startPosition; i < line.length(); i++) {
-            path += line.at(i);
-        }
-    }
-    return path;
-}
-
+/**
+ * Returns all memory regions of the process.
+ * Data is retrieved from the maps file.
+ * @return memory regions within a vector
+ */
 std::vector<MemoryRegion> Process::getMemoryRegions() {
 
     std::vector<MemoryRegion> memoryRegions;
@@ -184,18 +132,6 @@ std::vector<MemoryRegion> Process::getMemoryRegions() {
                                         std::istream_iterator<std::string>());
 
 
-        // TODO: Remove
-        //std::cout << "values amount: " << values.size() << std::endl;
-        if (values.size() > max)
-            max = values.size();
-        if (values.size() < min)
-            min = values.size();
-
-        if (values.size() == 7)
-            for (auto val: values) {
-                std::cout << val << std::endl;
-            }
-
         MemoryRegion memoryRegion;
         // fixme: unreliable parsing
         if (values.size() >= 5) {
@@ -205,13 +141,8 @@ std::vector<MemoryRegion> Process::getMemoryRegions() {
             std::string endAddress = addressRange.substr(addressRange.find('-') + 1,
                                                          addressRange.length() - 1); // TODO: Check length
 
-            //std::cout << "start: " << startAddress << "; end: " << endAddress << std::endl;
-
-
             memoryRegion.setStartAddress(std::stoul(startAddress, nullptr, 16));
             memoryRegion.setEndAddress(std::stoul(endAddress, nullptr, 16));
-            //std::cout << "start: " << memoryRegion.getStartAddress() << "; end: " << memoryRegion.getEndAddress() << std::endl;
-
 
             std::string permissions = values[1];
             memoryRegion.setPermissions(permissions);
@@ -222,41 +153,7 @@ std::vector<MemoryRegion> Process::getMemoryRegions() {
         }
 
         memoryRegions.push_back(memoryRegion);
-
-
-/*
-        std::string modulePath = getModulePath(item);
-        //std::cout << "DBG: " << modulePath << std::endl;
-
-        std::string s = modulePath;
-        std::string delimiter = "/";
-
-        size_t pos = 0;
-        std::string token;
-
-        size_t last = 0;
-        size_t next = 0;
-        while ((next = s.find(delimiter, last)) != std::string::npos)
-        {
-            std::cout << s.substr(last, next - last) << std::endl;
-            last = next + 1;
-        }
-        //std::cout << s.substr(last) << std::endl;
-        std::string lastPart = s.substr(last);
-
-        if (lastPart == moduleName)
-        {
-            std::string baseAddrStr = item.substr(0, item.find("-", 0));
-            std::cout << "length: " << baseAddrStr.length() << std::endl;
-            std::cout << "FOUND Module: " << lastPart << " at 0x" << baseAddrStr << std::endl;
-
-            return std::stol(baseAddrStr, NULL, 16);
-        }
-*/
-
     }
-
-    //std::cout << "min: " << min << "; max: " << max << std::endl;
     return memoryRegions;
 }
 
@@ -264,13 +161,17 @@ std::ostream &operator<<(std::ostream &strm, const Process &p) {
     return strm << "Process(name: " << p.processName << "; pid: " << p.pid << ")";
 }
 
+/**
+ * Adds up memory space of every memory region
+ * @return memory size
+ */
 unsigned long Process::getVirtualMemorySpace() {
     std::vector<MemoryRegion> memoryRegions = getMemoryRegions();
 
     unsigned long space = 0;
 
     for (auto memoryRegion: memoryRegions) {
-        space += memoryRegion.getEndAddress() - memoryRegion.getStartAddress(); // TODO: Change to getSpace
+        space += memoryRegion.getSpace();
     }
 
     return space;
@@ -284,13 +185,21 @@ unsigned long Process::getResidentSpace() {
 
     // TODO
     for (auto memoryRegion: memoryRegions) {
-        if ((memoryRegion.getPath() == "[stack]" || memoryRegion.getPath() == "[heap]") || (!memoryRegion.getPath().empty() && memoryRegion.isPrivatePerm() && memoryRegion.isRead()))
-            space += memoryRegion.getEndAddress() - memoryRegion.getStartAddress(); // TODO: Change to getSpace
+        if ((memoryRegion.getModulePath() == "[stack]" || memoryRegion.getModulePath() == "[heap]") || (!memoryRegion.getModulePath().empty() && memoryRegion.isPrivatePerm() && memoryRegion.isRead()))
+            space += memoryRegion.getSpace();
     }
 
     return space;
 }
 
+// TODO: Change method signature for read and write. Return return-value of system calls and throw an exception on failed read/write.
+/**
+ * Read memory from given address. Data will be written into buffer.
+ * @param address Memory address
+ * @param length Amount of bytes to read
+ * @param buffer Buffer for read data
+ * @return If read has succeeded
+ */
 bool Process::read(unsigned long address, size_t length, void *buffer) {
 
     struct iovec local[1];
@@ -303,9 +212,15 @@ bool Process::read(unsigned long address, size_t length, void *buffer) {
 
     ssize_t read = process_vm_readv(pid, local, 1, remote, 1, 0);
     return (read != -1);
-    //std::cout << "bytes read: " << read << std::endl;
 }
 
+/**
+ * Write memory from buffer to given address.
+ * @param address Memory address
+ * @param length Amount of bytes to write
+ * @param buffer Data that will be written to the given address
+ * @return If write has succeeded
+ */
 bool Process::write(unsigned long address, size_t length, void *buffer) {
 
     struct iovec local[1];
@@ -318,4 +233,28 @@ bool Process::write(unsigned long address, size_t length, void *buffer) {
 
     ssize_t write = process_vm_writev(pid, local, 1, remote, 1, 0);
     return (write != -1);
+}
+
+/**
+ * Returns process name retrieved from the comm file
+ * @return
+ */
+const std::string &Process::getProcessName() const {
+    return processName;
+}
+
+/**
+ * Returns pid
+ * @return
+ */
+int Process::getPid() const {
+    return pid;
+}
+
+/**
+ * Returns user name retrieved from the file owner of the process directory
+ * @return
+ */
+const std::string &Process::getUser() const {
+    return user;
 }

@@ -4,6 +4,7 @@
 #include "Command.h"
 #include "../os/Process.h"
 
+// TODO: Create memory access class from which read/write memory inherit to avoid duplicate code
 class WriteMemoryCommand : public Command {
 
 public:

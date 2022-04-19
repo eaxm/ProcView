@@ -44,7 +44,7 @@ public:
 
     void setPrivatePerm(bool privatePerm);
 
-    const std::string &getPath() const;
+    const std::string &getModulePath() const;
 
     void setPath(const std::string &path);
 

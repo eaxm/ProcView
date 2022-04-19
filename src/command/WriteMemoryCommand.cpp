@@ -6,7 +6,7 @@ WriteMemoryCommand::WriteMemoryCommand() {
     registerArg(Argument("--pid", true));
     registerArg(Argument("--address", true));       // address is relative to module if module is specified
     registerArg(Argument("--data", true));          // bytes to write
-    registerArg(Argument("--file-path", false));    // path name
+    registerArg(Argument("--module", false));       // file path of module
 }
 
 
@@ -16,6 +16,16 @@ void WriteMemoryCommand::execute() {
     unsigned long address = argMap.at("--address").getValueAsUnsignedLong(16);
 
     std::string data = argMap.at("--data").getValue();
+
+    Process p(pid);
+
+    auto argModule = argMap.at("--module");
+    if(argModule.hasValue()){
+        // if file path to module has been given, treat address as a relative address.
+        std::string moduleFilePath = argModule.getValue();
+        unsigned long baseAddress = p.getModuleBaseAddress(moduleFilePath);
+        address += baseAddress;
+    }
 
     if (data.length() % 2)
         throw std::invalid_argument("The bytes in the argument always need to have two characters. Example: 0F");
@@ -36,7 +46,6 @@ void WriteMemoryCommand::execute() {
         throw e;
     }
 
-    Process p(pid);
 
     // TODO: Check memory region permissions
     if (!p.write(address,size,byteBuffer)) {
@@ -47,5 +56,4 @@ void WriteMemoryCommand::execute() {
 
 
     std::free(byteBuffer);
-
 }

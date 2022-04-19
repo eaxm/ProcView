@@ -6,7 +6,7 @@ ReadMemoryCommand::ReadMemoryCommand() {
     registerArg(Argument("--pid", true));
     registerArg(Argument("--address", true));       // address is relative to module if module is specified
     registerArg(Argument("--amount", false));       // amount of bytes to read
-    registerArg(Argument("--file-path", false));    // path name
+    registerArg(Argument("--module", false));       // file path of module
 }
 
 void ReadMemoryCommand::execute() {
@@ -15,11 +15,23 @@ void ReadMemoryCommand::execute() {
 
     int amount = DEFAULT_AMOUNT_BYTES;
     auto argAmount = argMap.at("--amount");
-    if(argAmount.hasValue())
+    if(argAmount.hasValue()){
         amount = argAmount.getValueAsInt();
+        if(amount <= 0)
+            throw std::invalid_argument("amount is below 1");
+    }
 
 
     Process p(pid);
+
+    auto argModule = argMap.at("--module");
+    if(argModule.hasValue()){
+        // if file path to module has been given, treat address as a relative address.
+        std::string moduleFilePath = argModule.getValue();
+        unsigned long baseAddress = p.getModuleBaseAddress(moduleFilePath);
+        address += baseAddress;
+    }
+
 
     std::byte *buffer = (std::byte *) std::malloc(amount);
 

@@ -6,23 +6,20 @@
 /**
  * Thrown when process was not found
  */
-class ProcessNotFoundException : public std::exception
-{
+class ProcessNotFoundException : public std::exception {
 
 private:
     std::string msg = "Process not found";
 
 public:
-    inline ProcessNotFoundException(std::string msg)
-    {
+    inline ProcessNotFoundException(std::string msg) {
         this->msg = msg;
     }
-    inline ProcessNotFoundException()
-    {
+
+    inline ProcessNotFoundException() {
     }
 
-    const char* what() const noexcept override
-    {
+    const char *what() const noexcept override {
         return msg.c_str();
     }
 };

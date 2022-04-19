@@ -28,7 +28,7 @@ void StringsCommand::execute() {
 
 
     for (auto m: memoryRegions) {
-        if (m.isShared() || m.getPath().empty() || !m.isRead())
+        if (m.isShared() || m.getModulePath().empty() || !m.isRead())
             continue;
 
         unsigned long size = m.getSpace();

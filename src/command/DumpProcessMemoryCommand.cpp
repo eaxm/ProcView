@@ -20,7 +20,7 @@ void DumpProcessMemoryCommand::execute() {
     unsigned long writeCounter = 0;
 
     for(auto m : memoryRegions){
-        if (m.isShared() || m.getPath().empty() || !m.isRead())
+        if (m.isShared() || m.getModulePath().empty() || !m.isRead())
             continue;
 
         unsigned long size = m.getSpace();

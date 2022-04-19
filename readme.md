@@ -20,6 +20,7 @@ I'm always open for tips via GitHub issues.
 
 #### TODO:
 
+- Add logging library
 - Scan for signature/byte sequence
 - Inject shared object into target process that hooks functions and sends arguments via IPC to the analyzer process
 - Communicate with kernel module that hooks system calls by overwriting the system call table

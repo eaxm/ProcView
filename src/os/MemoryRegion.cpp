@@ -63,7 +63,7 @@ void MemoryRegion::setPrivatePerm(bool privatePerm) {
     MemoryRegion::privatePerm = privatePerm;
 }
 
-const std::string &MemoryRegion::getPath() const {
+const std::string &MemoryRegion::getModulePath() const {
     return path;
 }
 
