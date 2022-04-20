@@ -11,6 +11,10 @@ public:
 
     Argument(const std::string &name, bool aRequired, bool boolArg);
 
+    Argument(const std::string &name, bool aRequired, bool boolArg, const std::string &additionalInfo);
+
+    Argument(const std::string &name, bool aRequired, const std::string &additionalInfo);
+
     const std::string &getName() const;
 
     void setName(const std::string &name);
@@ -35,11 +39,16 @@ public:
 
     bool hasValue();
 
+    const std::string &getAdditionalInfo() const;
+
+    bool hasAdditionalInfo();
+
 private:
     std::string name;
     bool required = false;
     bool boolArg = false;
     std::string value;
+    std::string additionalInfo;
 };
 
 

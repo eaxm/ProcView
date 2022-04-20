@@ -5,6 +5,7 @@ StringsCommand::StringsCommand() {
 
     registerArg(Argument("--pid", true));
     registerArg(Argument("--min-length", false));
+    registerArg(Argument("--module", false));
 }
 
 void StringsCommand::execute() {
@@ -19,13 +20,16 @@ void StringsCommand::execute() {
     }
 
 
-    // TODO: Add argument to print module and address
-
-
     Process p(pid);
-
     std::vector<MemoryRegion> memoryRegions = p.getMemoryRegions();
 
+    auto argModule = argMap.at("--module");
+    if(argModule.hasValue()){
+        std::string module = argModule.getValue();
+        memoryRegions.erase(std::remove_if(memoryRegions.begin(), memoryRegions.end(), [module] (MemoryRegion m) {
+            return m.getModulePath() != module;
+        }), memoryRegions.end());
+    }
 
     for (auto m: memoryRegions) {
         if (m.isShared() || m.getModulePath().empty() || !m.isRead())
@@ -33,7 +37,10 @@ void StringsCommand::execute() {
 
         unsigned long size = m.getSpace();
         char *buffer = (char *) std::malloc(size);
-        p.read(m.getStartAddress(), size, buffer);
+        if(!p.read(m.getStartAddress(), size, buffer)){
+            std::free(buffer);
+            continue;
+        }
 
         std::string temp;
         for (int i = 0; i < size; i++) {
@@ -46,6 +53,7 @@ void StringsCommand::execute() {
             }else{
                 if (temp.length() >= currentMinLength) {
                     std::cout << "found string: " << temp << std::endl;
+                    std::cout << "location: " << m.getModulePath() << " + 0x" << std::hex << i << std::dec << std::endl << std::endl;
                 }
                 temp.clear();
             }

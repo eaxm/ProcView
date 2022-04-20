@@ -25,6 +25,7 @@ class Process {
 private:
     inline static const std::string PROC_PATH = "/proc/";
     inline static const std::string COMM_NAME = "/comm";
+    inline static const std::string STATM_NAME = "/statm";
 
     std::string processName;
     int pid;

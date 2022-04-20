@@ -5,6 +5,14 @@ Argument::Argument(const std::string &name, bool aRequired, bool boolArg) : name
 
 Argument::Argument(const std::string &name, bool aRequired) : name(name), required(aRequired) {}
 
+Argument::Argument(const std::string &name, bool aRequired, bool boolArg, const std::string &additionalInfo) : name(
+        name), required(aRequired), boolArg(boolArg), additionalInfo(additionalInfo) {}
+
+Argument::Argument(const std::string &name, bool aRequired, const std::string &additionalInfo) : name(name),
+                                                                                                 required(aRequired),
+                                                                                                 additionalInfo(
+                                                                                                         additionalInfo) {}
+
 const std::string &Argument::getName() const {
     return name;
 }
@@ -57,4 +65,12 @@ unsigned long Argument::getValueAsUnsignedLong(int base) {
 
 bool Argument::hasValue() {
     return !value.empty();
+}
+
+const std::string &Argument::getAdditionalInfo() const {
+    return additionalInfo;
+}
+
+bool Argument::hasAdditionalInfo() {
+    return !additionalInfo.empty();
 }

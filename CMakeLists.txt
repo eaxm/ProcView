@@ -3,6 +3,8 @@ project(ProcView)
 
 set(CMAKE_CXX_STANDARD 20)
 
+find_package(Threads)
+
 add_executable(ProcView
         src/main.cpp
         src/os/exception/ProcessNotFoundException.h
@@ -21,3 +23,5 @@ add_executable(ProcView
         src/command/Argument.cpp src/command/Argument.h
         src/command/exception/EmptyArgumentException.h
         src/os/exception/ModuleNotFoundException.h)
+
+target_link_libraries(ProcView Threads::Threads)

@@ -47,7 +47,7 @@ void ReadMemoryCommand::execute() {
         std::byte b = buffer[i];
         std::cout << (int)b << " ";
     }
-    std::cout << std::endl;
+    std::cout << std::dec << std::endl; // set cout back to dec and print a new line
 
     std::free(buffer);
 }

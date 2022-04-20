@@ -6,8 +6,7 @@ SystemCallLoggerCommand::SystemCallLoggerCommand() {
 }
 
 
-void SystemCallLoggerCommand::execute() {
-    int pid = argMap.at("--pid").getValueAsInt();
+void SystemCallLoggerCommand::systemCallLogger(int pid) {
 
     long ret = ptrace(PTRACE_ATTACH, pid, NULL, NULL);
     if (ret == -1) {
@@ -20,8 +19,8 @@ void SystemCallLoggerCommand::execute() {
 
     waitpid(pid, NULL, 0);
 
-    // TODO: Exit on specified condition
-    for (;;) {
+
+    while (proceed) {
         ret = ptrace(PTRACE_SYSCALL, pid, NULL, NULL);
         if (ret == -1) {
             std::cout << "error: " << errno << std::endl;
@@ -45,5 +44,26 @@ void SystemCallLoggerCommand::execute() {
 
     }
 
+    ret = ptrace(PTRACE_DETACH, pid, NULL, NULL);
+    if (ret == -1) {
+        std::cout << "error: " << errno << std::endl;
+        return;
+    }
 
+}
+
+void SystemCallLoggerCommand::execute() {
+    int pid = argMap.at("--pid").getValueAsInt();
+
+    proceed = true;
+
+    std::thread t(&SystemCallLoggerCommand::systemCallLogger, this, pid);
+
+    std::cout << "Press any key to exit the system call logger" << std::endl;
+    getchar();
+
+    proceed = false;
+    std::cout << "Exiting on next system call" << std::endl; // TODO: Not optimal
+
+    t.join();
 }

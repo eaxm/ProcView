@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "Process.h"
 
 /**
@@ -10,11 +11,11 @@ Process::Process(int pid) {
 
     std::string pidProcPath = PROC_PATH + std::to_string(pid);
 
-    if(!std::filesystem::is_directory(pidProcPath))
+    if (!std::filesystem::is_directory(pidProcPath))
         throw ProcessNotFoundException("Could not find directory: " + pidProcPath);
 
     std::string commPath = pidProcPath.append(COMM_NAME);
-    if(!std::filesystem::is_regular_file(commPath))
+    if (!std::filesystem::is_regular_file(commPath))
         throw ProcessNotFoundException("Could not find file: " + commPath);
 
     std::ifstream t(commPath);
@@ -26,12 +27,12 @@ Process::Process(int pid) {
     this->processName = commProcessName;
 
     struct stat info;
-    if(stat(pidProcPath.c_str(), &info) == -1)
+    if (stat(pidProcPath.c_str(), &info) == -1)
         throw ProcessNotFoundException();
 
     struct passwd *pw = getpwuid(info.st_uid);
 
-    if(pw == nullptr)
+    if (pw == nullptr)
         throw ProcessNotFoundException();
 
     this->user = pw->pw_name;
@@ -44,7 +45,7 @@ Process::Process(int pid) {
  * @return Processes in a vector
  */
 std::vector<Process> Process::getProcessList() {
-    std::vector<Process> procList = {};
+    std::vector<Process> procList;
 
     for (const auto &entry: std::filesystem::directory_iterator(PROC_PATH)) {
 
@@ -88,7 +89,6 @@ std::stringstream Process::getMaps() {
     buffer << t.rdbuf();
 
     return buffer;
-    // TODO: Close?
 }
 
 /**
@@ -100,14 +100,15 @@ unsigned long Process::getModuleBaseAddress(std::string moduleName) {
 
     std::vector<MemoryRegion> memoryRegions = getMemoryRegions();
 
-    std::vector<MemoryRegion>::iterator it = std::find_if(memoryRegions.begin(), memoryRegions.end(), [moduleName] (MemoryRegion m){
-        return m.getModulePath() == moduleName;
-    });
+    std::vector<MemoryRegion>::iterator it = std::find_if(memoryRegions.begin(), memoryRegions.end(),
+                                                          [moduleName](MemoryRegion m) {
+                                                              return m.getModulePath() == moduleName;
+                                                          });
 
-    if(it != memoryRegions.end()){
-        std::cout << "memory region found: " << std::hex << it->getStartAddress() << std::endl;
+    if (it != memoryRegions.end()) {
+        std::cout << "memory region found: " << std::hex << it->getStartAddress() << std::dec << std::endl;
         return it->getStartAddress();
-    }else{
+    } else {
         std::cout << "memory region not found." << std::endl;
         throw ProcessNotFoundException();
     }
@@ -166,6 +167,7 @@ std::ostream &operator<<(std::ostream &strm, const Process &p) {
  * @return memory size
  */
 unsigned long Process::getVirtualMemorySpace() {
+    // TODO: Read value from statm instead
     std::vector<MemoryRegion> memoryRegions = getMemoryRegions();
 
     unsigned long space = 0;
@@ -177,19 +179,39 @@ unsigned long Process::getVirtualMemorySpace() {
     return space;
 }
 
-// TODO: Rename, it's not accurate
+/**
+ * Get resident space from statm file
+ * @return resident memory size
+ */
 unsigned long Process::getResidentSpace() {
-    std::vector<MemoryRegion> memoryRegions = getMemoryRegions();
 
-    unsigned long space = 0;
+    std::string statmPath = PROC_PATH + std::to_string(pid) + STATM_NAME;
+    if (!std::filesystem::is_regular_file(statmPath))
+        throw std::exception(); // TODO: Create an extra exception
 
-    // TODO
-    for (auto memoryRegion: memoryRegions) {
-        if ((memoryRegion.getModulePath() == "[stack]" || memoryRegion.getModulePath() == "[heap]") || (!memoryRegion.getModulePath().empty() && memoryRegion.isPrivatePerm() && memoryRegion.isRead()))
-            space += memoryRegion.getSpace();
-    }
+    std::ifstream t(statmPath);
+    if (!t.good())
+        throw std::exception();
 
-    return space;
+
+    std::string statmContent;
+    getline(t, statmContent);
+
+
+    std::istringstream iss(statmContent);
+    std::vector<std::string> statmValues(std::istream_iterator<std::string>{iss},
+                                  std::istream_iterator<std::string>());
+
+    if(statmValues.size() < 2)
+        throw std::exception();
+
+    long resMemoryPageAmount = std::stoul(statmValues.at(1));
+
+    long pageSize = sysconf(_SC_PAGESIZE);
+
+    unsigned long resMemorySize = resMemoryPageAmount * pageSize;
+
+    return resMemorySize;
 }
 
 // TODO: Change method signature for read and write. Return return-value of system calls and throw an exception on failed read/write.

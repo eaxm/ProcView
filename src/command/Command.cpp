@@ -14,6 +14,9 @@ void Command::start(std::string input) {
             // TODO: Format string -> spacing
             std::cout << val.getName() << std::boolalpha << ": required=" <<  val.isRequired() << ", boolFlag=" << val.isBoolArg()
                       << std::endl;
+            if(val.hasAdditionalInfo()){
+                std::cout << "\t" << val.getAdditionalInfo() << std::endl;
+            }
         }
         std::cout << std::endl;
     } else {
@@ -21,7 +24,7 @@ void Command::start(std::string input) {
     }
 
     // clear values
-    for (auto arg: argMap) {
+    for (auto &arg: argMap) {
         arg.second.setValue("");
     }
 

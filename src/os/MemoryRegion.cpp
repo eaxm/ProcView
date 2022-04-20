@@ -82,7 +82,10 @@ void MemoryRegion::setPermissions(std::string permissions) {
     this->privatePerm = permissions[3] == 'p';
 
 }
-
+/**
+ * Subtracts startAddress from endAddress
+ * @return memory size
+ */
 unsigned long MemoryRegion::getSpace() {
     return endAddress - startAddress;
 }

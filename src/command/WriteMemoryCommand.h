@@ -12,6 +12,7 @@ public:
 
 private:
     void execute() override;
+    inline static const std::string DATA_FORMAT_INFO = "A byte needs to consist of two characters in hex. No spaces between bytes. Example: 0A0B0C";
 };
 
 
